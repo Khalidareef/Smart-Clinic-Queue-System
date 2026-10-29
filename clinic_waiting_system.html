@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>نظام انتظار العيادة</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap');
+:root{--navy:#102b46;--teal:#19a79b;--mint:#e6f7f4;--ink:#183047;--muted:#6e8294;--bg:#f3f7fa;--white:#fff;--line:#e1eaf0;--gold:#f4bd55}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:'Cairo',Tahoma,Arial,sans-serif;color:var(--ink);min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:14px;padding:12px 18px;font-weight:800;transition:.18s}button:hover{transform:translateY(-1px);filter:brightness(.98)}
+.topbar{background:var(--navy);color:white;padding:18px 4vw;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:13px}.logo{width:48px;height:48px;border-radius:15px;background:#ffffff1b;display:grid;place-items:center;font-size:27px}.brand h1{font-size:clamp(18px,2vw,27px);margin:0;font-weight:900}.brand p{margin:2px 0 0;color:#bdd1df;font-size:13px}
+.top-right{display:flex;align-items:center;gap:12px;color:#d8e8ef;font-size:14px}.live{display:flex;align-items:center;gap:8px;background:#ffffff12;padding:9px 13px;border-radius:30px}.dot{width:9px;height:9px;border-radius:50%;background:#62e5bd;box-shadow:0 0 0 4px #62e5bd22}
+.wrap{max-width:1500px;margin:auto;padding:28px 4vw 36px}.display-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:22px}.panel{border-radius:26px;background:white;box-shadow:0 12px 40px #1830470b;border:1px solid #e7eef3;overflow:hidden}
+.current{background:linear-gradient(135deg,#102b46 0%,#174b63 100%);color:white;padding:clamp(24px,4vw,54px);position:relative;min-height:390px;display:flex;flex-direction:column;justify-content:space-between}.current:after{content:"+";position:absolute;font-size:270px;font-weight:200;line-height:1;color:#ffffff08;left:18px;bottom:-75px}.eyebrow{display:flex;align-items:center;gap:9px;color:#a8d9d6;font-size:15px;font-weight:700}.eyebrow span{width:8px;height:8px;border-radius:50%;background:#4be0bd}
+.current-label{font-size:clamp(18px,2vw,25px);color:#d7e7ef;margin-top:20px}.number{font-size:clamp(100px,18vw,210px);line-height:1.05;font-weight:900;letter-spacing:1px;color:white;text-shadow:0 8px 30px #061a2b40;margin:6px 0}.doctor{display:flex;align-items:center;gap:12px;font-size:18px;color:#dceaf0}.doctor-icon{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:#ffffff16;font-size:23px}.doctor strong{display:block;color:white;font-size:19px}
+.side{display:flex;flex-direction:column;gap:22px}.next-card{padding:27px;flex:1}.section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.section-title h2{font-size:19px;margin:0;font-weight:900}.tag{background:var(--mint);color:#13877e;border-radius:30px;padding:5px 11px;font-size:12px;font-weight:800}
+.next-list{display:flex;flex-direction:column;gap:12px}.next-row{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border:1px solid var(--line);border-radius:16px;background:#fbfdfe}.next-row .small-label{font-size:13px;color:var(--muted)}.next-row strong{font-size:26px;color:var(--navy);font-weight:900}.next-row:first-child{background:#f0fbf9;border-color:#c9eeea}
+.info-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}.info{background:white;border:1px solid #e7eef3;border-radius:18px;padding:17px 19px;display:flex;gap:13px;align-items:center}.info-icon{width:43px;height:43px;border-radius:13px;display:grid;place-items:center;background:#eff6fa;font-size:21px}.info small{display:block;color:var(--muted);font-size:12px}.info strong{font-size:16px}
+.footer{display:flex;justify-content:space-between;gap:15px;color:#8092a1;font-size:12px;margin-top:25px;padding:0 3px}
+.admin{display:none}.admin .panel{padding:26px}.admin h2{margin:0 0 8px;font-size:22px}.sub{margin:0 0 24px;color:var(--muted);font-size:14px}.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}.field{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}.field label{font-size:13px;font-weight:800;color:#526a7d}.field input,.field select{width:100%;border:1px solid #dbe6ed;background:#fbfdfe;border-radius:12px;padding:12px 14px;color:var(--ink);outline:none}.field input:focus,.field select:focus{border-color:var(--teal);box-shadow:0 0 0 3px #19a79b20}.btn-primary{background:var(--teal);color:white}.btn-dark{background:var(--navy);color:white}.btn-soft{background:#edf4f8;color:var(--navy)}.btn-danger{background:#fff0ee;color:#b84439}.actions{display:flex;gap:10px;flex-wrap:wrap}.current-admin{display:flex;align-items:center;justify-content:space-between;background:#f0fbf9;border:1px solid #d3f0eb;padding:17px;border-radius:16px;margin:15px 0 20px}.current-admin strong{font-size:32px;color:var(--navy)}.queue{display:flex;flex-direction:column;gap:9px}.queue-item{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);padding:12px 14px;border-radius:13px}.queue-item strong{font-size:20px}.queue-item small{display:block;color:var(--muted)}.empty{padding:25px;text-align:center;color:var(--muted);background:#f7fafc;border-radius:14px}
+.mode-links{display:flex;gap:8px;flex-wrap:wrap}.mode-links a{color:white;text-decoration:none;background:#ffffff17;padding:9px 13px;border-radius:12px;font-size:13px}
+@media(max-width:850px){.display-grid,.admin-grid{grid-template-columns:1fr}.current{min-height:330px}.number{font-size:clamp(100px,25vw,180px)}.info-strip{grid-template-columns:1fr}.topbar{align-items:flex-start}.top-right{flex-direction:column;align-items:flex-end}.wrap{padding-top:18px}}
+@media(max-width:500px){.topbar{padding:15px 5vw}.logo{width:42px;height:42px}.brand p{font-size:11px}.top-right .live{display:none}.current{padding:25px}.footer{flex-direction:column}}
+body.kiosk .admin,body.kiosk .admin-link{display:none!important}body.kiosk .display-grid{grid-template-columns:1.25fr .75fr}
+body.admin-mode .display-view{display:none}body.admin-mode .admin{display:block}body.admin-mode .display-link{display:none}
+@media(max-width:850px){body.kiosk .display-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="logo">✚</div><div><h1 id="clinicName">عيادة الشفاء</h1><p>نظام إدارة وتنظيم انتظار المرضى</p></div></div>
+  <div class="top-right"><div class="live"><span class="dot"></span><span>نظام انتظار مباشر</span></div><div id="clock">--:--</div><div class="mode-links"><a class="admin-link" href="?mode=admin">لوحة التحكم</a><a class="display-link" href="?mode=display">شاشة العرض</a></div></div>
+</header>
+<main class="wrap">
+<section class="display-view">
+  <div class="display-grid">
+    <div class="panel current">
+      <div><div class="eyebrow"><span></span> الدور الحالي</div><div class="current-label">رقم المريض الذي يتم استدعاؤه</div><div class="number" id="currentNumber">--</div></div>
+      <div class="doctor"><div class="doctor-icon">♙</div><div><span>يرجى التوجه إلى</span><strong id="roomLabel">غرفة الكشف 1</strong></div></div>
+    </div>
+    <div class="side">
+      <div class="panel next-card"><div class="section-title"><h2>الأدوار التالية</h2><span class="tag">التالي</span></div><div class="next-list" id="nextList"></div></div>
+      <div class="panel next-card"><div class="section-title"><h2>تنويه للمرضى</h2><span>♡</span></div><p style="line-height:2;color:#60788a;margin:0">يرجى متابعة رقم الانتظار على الشاشة. عند ظهور رقمك، تفضل بالتوجه إلى غرفة الكشف المحددة.</p><div style="display:flex;gap:10px;align-items:center;margin-top:18px;background:#f6fafc;border-radius:14px;padding:12px"><span style="font-size:22px">🔔</span><strong style="font-size:13px">نتمنى لكم دوام الصحة والعافية</strong></div></div>
+    </div>
+  </div>
+  <div class="info-strip"><div class="info"><div class="info-icon">🩺</div><div><small>الطبيب</small><strong id="doctorName">د. الطبيب المعالج</strong></div></div><div class="info"><div class="info-icon">🕒</div><div><small>وقت العمل</small><strong id="workHours">من 9 صباحًا إلى 9 مساءً</strong></div></div><div class="info"><div class="info-icon">👥</div><div><small>عدد المنتظرين</small><strong id="waitingCount">0 مريض</strong></div></div></div>
+  <div class="footer"><span>نظام انتظار العيادة • نرجو الالتزام بالهدوء</span><span id="dateText"></span></div>
+</section>
+
+<section class="admin">
+  <div class="admin-grid">
+    <div class="panel">
+      <h2>لوحة التحكم</h2><p class="sub">إدارة الأدوار وتحديث شاشة الانتظار.</p>
+      <div class="field"><label for="clinicInput">اسم العيادة</label><input id="clinicInput" value="عيادة الشفاء"></div>
+      <div class="field"><label for="doctorInput">اسم الطبيب</label><input id="doctorInput" value="د. الطبيب المعالج"></div>
+      <div class="field"><label for="roomInput">رقم / اسم غرفة الكشف</label><input id="roomInput" value="غرفة الكشف 1"></div>
+      <div class="field"><label for="hoursInput">مواعيد العمل</label><input id="hoursInput" value="من 9 صباحًا إلى 9 مساءً"></div>
+      <div class="actions"><button class="btn-soft" id="saveSettings">حفظ بيانات العيادة</button><button class="btn-soft" id="openDisplay">فتح شاشة العرض ↗</button></div>
+    </div>
+    <div class="panel">
+      <h2>استدعاء المرضى</h2><p class="sub">أضف رقمًا يدويًا أو استدعِ الرقم التالي تلقائيًا.</p>
+      <div class="current-admin"><div><small>الرقم الحالي</small><div style="color:#6e8294;font-size:12px">المريض المستدعى الآن</div></div><strong id="adminCurrent">--</strong></div>
+      <div class="field"><label for="patientInput">رقم المريض التالي</label><input id="patientInput" type="number" min="1" placeholder="مثال: 12"></div>
+      <div class="actions"><button class="btn-primary" id="callManual">استدعاء الرقم</button><button class="btn-dark" id="callNext">استدعاء التالي +1</button><button class="btn-soft" id="repeatCall">إعادة النداء</button><button class="btn-danger" id="resetAll">بدء يوم جديد</button></div>
+      <p id="status" style="color:#14877e;font-size:13px;min-height:20px;margin:15px 0 0"></p>
+    </div>
+    <div class="panel" style="grid-column:1/-1">
+      <div class="section-title"><div><h2>قائمة الانتظار</h2><p class="sub" style="margin:4px 0 0">أضف الأرقام المنتظرة لتظهر تلقائيًا على شاشة العرض.</p></div><span class="tag" id="queueBadge">0 مريض</span></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px"><div class="field" style="margin:0;flex:1;min-width:180px"><label for="addQueueInput">رقم مريض لإضافته</label><input id="addQueueInput" type="number" min="1" placeholder="رقم الانتظار"></div><button class="btn-primary" id="addQueue" style="align-self:end">إضافة إلى الانتظار</button></div>
+      <div class="queue" id="adminQueue"></div>
+    </div>
+  </div>
+</section>
+</main>
+<script>
+const KEY='clinic_waiting_system_v1';
+const initial={clinic:'عيادة الشفاء',doctor:'د. الطبيب المعالج',room:'غرفة الكشف 1',hours:'من 9 صباحًا إلى 9 مساءً',current:0,queue:[],lastCalled:0};
+let state=load();
+function load(){try{return {...initial,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch(e){return {...initial}}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
+function render(){
+ document.getElementById('clinicName').textContent=state.clinic;
+ document.getElementById('currentNumber').textContent=state.current||'--';
+ document.getElementById('adminCurrent').textContent=state.current||'--';
+ document.getElementById('roomLabel').textContent=state.room;
+ document.getElementById('doctorName').textContent=state.doctor;
+ document.getElementById('workHours').textContent=state.hours;
+ document.getElementById('waitingCount').textContent=state.queue.length+' مريض';
+ document.getElementById('queueBadge').textContent=state.queue.length+' مريض';
+ const next=document.getElementById('nextList');
+ const upcoming=state.queue.slice(0,4);
+ next.innerHTML=upcoming.length?upcoming.map((n,i)=>`<div class="next-row"><div><div class="small-label">${i===0?'الدور التالي':'بعده'}</div></div><strong>${esc(n)}</strong></div>`).join(''):'<div class="empty">لا توجد أرقام في قائمة الانتظار حاليًا</div>';
+ const q=document.getElementById('adminQueue');
+ q.innerHTML=state.queue.length?state.queue.map((n,i)=>`<div class="queue-item"><div><small>ترتيب الانتظار ${i+1}</small><strong>${esc(n)}</strong></div><button class="btn-danger" data-remove="${i}">حذف</button></div>`).join(''):'<div class="empty">قائمة الانتظار فارغة. أضف رقم مريض للبدء.</div>';
+ document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{state.queue.splice(Number(b.dataset.remove),1);save();status('تم حذف الرقم من قائمة الانتظار')});
+ ['clinicInput','doctorInput','roomInput','hoursInput'].forEach((id,i)=>{const el=document.getElementById(id);const v=[state.clinic,state.doctor,state.room,state.hours][i];if(document.activeElement!==el)el.value=v});
+}
+function esc(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function status(s){const el=document.getElementById('status');el.textContent=s;setTimeout(()=>{if(el.textContent===s)el.textContent=''},3000)}
+function callNumber(n){n=Number(n);if(!Number.isInteger(n)||n<1){status('أدخل رقمًا صحيحًا أكبر من صفر');return}state.current=n;state.lastCalled=n;state.queue=state.queue.filter(x=>Number(x)!==n);save();status('تم استدعاء المريض رقم '+n)}
+document.getElementById('saveSettings').onclick=()=>{state.clinic=document.getElementById('clinicInput').value.trim()||initial.clinic;state.doctor=document.getElementById('doctorInput').value.trim()||initial.doctor;state.room=document.getElementById('roomInput').value.trim()||initial.room;state.hours=document.getElementById('hoursInput').value.trim()||initial.hours;save();status('تم حفظ بيانات العيادة')};
+document.getElementById('callManual').onclick=()=>callNumber(document.getElementById('patientInput').value);
+document.getElementById('callNext').onclick=()=>{let n=state.queue.length?state.queue[0]:((Number(state.current)||0)+1);callNumber(n);document.getElementById('patientInput').value=''};
+document.getElementById('repeatCall').onclick=()=>{if(state.lastCalled){state.current=state.lastCalled;save();status('تم تكرار نداء المريض رقم '+state.lastCalled)}else status('لا يوجد رقم سابق لإعادة النداء')};
+document.getElementById('resetAll').onclick=()=>{if(confirm('هل تريد بدء يوم جديد ومسح رقم الدور وقائمة الانتظار؟')){state.current=0;state.lastCalled=0;state.queue=[];save();status('تم بدء يوم جديد')}};
+document.getElementById('addQueue').onclick=()=>{const el=document.getElementById('addQueueInput');const n=Number(el.value);if(!Number.isInteger(n)||n<1){status('أدخل رقمًا صحيحًا أكبر من صفر');return}if(state.queue.some(x=>Number(x)===n)||Number(state.current)===n){status('هذا الرقم موجود بالفعل أو تم استدعاؤه');return}state.queue.push(n);state.queue.sort((a,b)=>a-b);el.value='';save();status('تمت إضافة الرقم إلى قائمة الانتظار')};
+document.getElementById('openDisplay').onclick=()=>window.open(location.pathname+'?mode=display','clinicDisplay');
+window.addEventListener('storage',e=>{if(e.key===KEY){state=load();render()}});
+function tick(){const d=new Date();document.getElementById('clock').textContent=d.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});document.getElementById('dateText').textContent=d.toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}
+const mode=new URLSearchParams(location.search).get('mode');if(mode==='display'){document.body.classList.add('kiosk')}else if(mode==='admin'){document.body.classList.add('admin-mode')}
+tick();setInterval(tick,1000);render();
+</script>
+</body>
+</html>
