@@ -13,3 +13,5 @@ A complete, high-end automated queue management system built for modern clinics.
 * **Database:** MySQL
 * **Automation:** n8n, Docker
 * **Frontend:** HTML, CSS, JavaScript (Embedded via QWebEngineView)
+<img width="1600" height="899" alt="1000513757" src="https://github.com/user-attachments/assets/b0c7bb10-0b40-41a6-afd5-f983975caae1" />
+<img width="1600" height="899" alt="1000513758" src="https://github.com/user-attachments/assets/bdf473b0-6030-4194-9269-530365736f6c" />
